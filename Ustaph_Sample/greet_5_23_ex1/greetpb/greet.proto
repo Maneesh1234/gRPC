@@ -1,0 +1,31 @@
+
+syntax = "proto3";
+
+package greet_5_23_ex1;
+//THIS IS FOR CODE GENERATION
+option go_package="greet_5_23_ex1/greetpb";
+
+
+
+
+
+message Greeting {
+   int64 first_num = 1;
+   int64 second_num = 2;
+}
+
+message GreetRequest {
+    Greeting greeting = 1;
+}
+
+message GreetResponse {
+    int64 result = 1;
+}
+
+
+service GreetService{
+    // Unary
+    rpc Greet(GreetRequest) returns (GreetResponse) {};
+
+    
+}
