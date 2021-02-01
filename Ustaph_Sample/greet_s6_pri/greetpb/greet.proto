@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package greet_s6_pri;
+//THIS IS FOR CODE GENERATION
+option go_package="greet_s6_pri/greetpb";
+
+
+
+
+
+
+message PrimeNumberDecomposition {
+    int64 num = 1;
+  
+}
+
+
+
+message PrimeNumberRequest {
+    PrimeNumberDecomposition primeNumberDecomposition = 1;
+}
+
+message PrimeNumberResponse {
+    int64 result = 1;
+}
+
+
+service CalculatorService{
+    
+     // Server Streaming
+     rpc PrimeManyTimes(PrimeNumberRequest) returns (stream PrimeNumberResponse) {};
+}
