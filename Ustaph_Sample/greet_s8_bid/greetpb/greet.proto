@@ -1,46 +1,63 @@
 
+
 syntax = "proto3";
 
-package greet_s7_avg;
+package greet_s8_bid;
+
 //THIS IS FOR CODE GENERATION
-option go_package="greet_s7_avg/greetpb";
+option go_package="greet_s8_bid/greetpb";
 
 
 
 
 
-
-message PrimeNumberDecomposition {
-    int64 num = 1;
-  
+message Greeting {
+    string first_name = 1;
+    string last_name = 2;
 }
 
-
-
-message PrimeNumberRequest {
-    PrimeNumberDecomposition primeNumberDecomposition = 1;
+message GreetRequest {
+    Greeting greeting = 1;
 }
 
-message PrimeNumberResponse {
-    int64 result = 1;
+message GreetResponse {
+    string result = 1;
 }
 
-message ComputeAverageRequest {
-    int64 num = 1;
+message GreetManyTimesRequest {
+    Greeting greeting = 1;
 }
 
-message ComputeAverageResponse {
-    int64 avg = 1;
+message GreetManytimesResponse {
+    string result = 1;
 }
 
+message LongGreetRequest {
+    Greeting greeting = 1;
+}
 
+message LongGreetResponse {
+    string result = 1;
+}
+message GreetEveryoneRequest {
+    Greeting greeting = 1;
+}
 
+message GreetEveryoneResponse {
+    string result = 1;
+}
 
-service CalculatorService{
-    
+service GreetService{
+    // Unary
+    rpc Greet(GreetRequest) returns (GreetResponse) {};
+
      // Server Streaming
-     rpc PrimeManyTimes(PrimeNumberRequest) returns (stream PrimeNumberResponse) {};
+     rpc GreetManyTimes(GreetManyTimesRequest) returns (stream GreetManytimesResponse) {};
 
       // Client Streaming
-    rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
+    rpc LongGreet(stream LongGreetRequest) returns (LongGreetResponse) {};
+
+     // BiDi Streaming
+     rpc GreetEveryone(stream GreetEveryoneRequest) returns (stream GreetEveryoneResponse) {};
+
 }
