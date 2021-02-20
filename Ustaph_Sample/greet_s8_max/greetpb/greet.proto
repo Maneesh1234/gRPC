@@ -1,0 +1,57 @@
+
+syntax = "proto3";
+
+package greet_s8_max;
+//THIS IS FOR CODE GENERATION
+option go_package="greet_s8_max/greetpb";
+
+
+
+
+
+
+message PrimeNumberDecomposition {
+    int64 num = 1;
+  
+}
+
+
+
+message PrimeNumberRequest {
+    PrimeNumberDecomposition primeNumberDecomposition = 1;
+}
+
+message PrimeNumberResponse {
+    int64 result = 1;
+}
+
+message ComputeAverageRequest {
+    int64 num = 1;
+}
+
+message ComputeAverageResponse {
+    int64 avg = 1;
+}
+
+message FindMaximumRequest {
+    int64 num = 1;
+}
+
+message FindMaximumResponse {
+    int64 max = 1;
+}
+
+
+
+
+service CalculatorService{
+    
+     // Server Streaming
+     rpc PrimeManyTimes(PrimeNumberRequest) returns (stream PrimeNumberResponse) {};
+
+      // Client Streaming
+    rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
+
+    //BiDi
+    rpc FindMaximum(stream FindMaximumRequest) returns (stream FindMaximumResponse) {};
+}
