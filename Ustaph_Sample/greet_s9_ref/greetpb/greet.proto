@@ -1,0 +1,68 @@
+
+syntax = "proto3";
+
+package greet_s9_ref;
+//THIS IS FOR CODE GENERATION
+option go_package="greet_s9_ref/greetpb";
+
+
+
+
+
+
+message PrimeNumberDecomposition {
+    int64 num = 1;
+  
+}
+
+
+
+message PrimeNumberRequest {
+    PrimeNumberDecomposition primeNumberDecomposition = 1;
+}
+
+message PrimeNumberResponse {
+    int64 result = 1;
+}
+
+message ComputeAverageRequest {
+    int64 num = 1;
+}
+
+message ComputeAverageResponse {
+    int64 avg = 1;
+}
+
+message FindMaximumRequest {
+    int64 num = 1;
+}
+
+message FindMaximumResponse {
+    int64 max = 1;
+}
+
+
+message SquareRootRequest {
+    int32 number = 1;
+}
+
+message SquareRootResponse {
+    double number_root = 1;
+}
+
+service CalculatorService{
+    
+     // Server Streaming
+     rpc PrimeManyTimes(PrimeNumberRequest) returns (stream PrimeNumberResponse) {};
+
+      // Client Streaming
+    rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
+
+    //BiDi
+    rpc FindMaximum(stream FindMaximumRequest) returns (stream FindMaximumResponse) {};
+
+    // error handling
+    // this RPC will throw an exception if the sent number is negative
+    // The error being sent is of type INVALID_ARGUMENT
+    rpc SquareRoot(SquareRootRequest) returns (SquareRootResponse) {};
+}
