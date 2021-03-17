@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package blog_mysql;
+
+option go_package = "blogpb";
+
+message Blog {
+   
+    int64 author_id = 1;
+    string title = 2;
+    string content = 3;
+}
+
+message CreateBlogRequest {
+    Blog blog = 1;
+}
+
+message CreateBlogResponse {
+    Blog blog = 1; // will have a blog id
+}
+
+
+
+
+service BlogService {
+    rpc CreateBlog (CreateBlogRequest) returns (CreateBlogResponse);
+   
+}
