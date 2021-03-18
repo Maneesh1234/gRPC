@@ -18,11 +18,19 @@ message CreateBlogRequest {
 message CreateBlogResponse {
     Blog blog = 1; // will have a blog id
 }
+message ReadBlogRequest {
+    int64 author_id = 1;
+}
+
+message ReadBlogResponse {
+    Blog blog = 1;
+}
 
 
 
 
 service BlogService {
     rpc CreateBlog (CreateBlogRequest) returns (CreateBlogResponse);
+     rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse); // return NOT_FOUND if not found
    
 }
