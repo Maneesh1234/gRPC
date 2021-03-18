@@ -100,6 +100,49 @@ func dataToBlogPb(data *blogItem) *blogpb.Blog {
 }
 
 
+func (s *server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequest) (*blogpb.ReadBlogResponse, error) {
+	fmt.Println("Read blog request")
+
+	
+	// get SQL connection from pool
+	c, err := s.connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+	authorId:=req.GetAuthorId()
+	data := &blogItem{}
+	// query blog by ID
+	rows, err := c.QueryContext(ctx, "SELECT `author_id`, `content`, `title` FROM blog WHERE `author_id`=?",
+		authorId)
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to select from blog-> "+err.Error())
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return nil, status.Error(codes.Unknown, "failed to retrieve data from blog-> "+err.Error())
+		}
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("blog with author_id='%d' is not found",
+			authorId))
+	}
+
+	
+	if err := rows.Scan(&data.AuthorID, &data.Content, &data.Title); err != nil {
+		return nil, status.Error(codes.Unknown, "failed to retrieve field values from blog row-> "+err.Error())
+	}
+	if rows.Next() {
+		return nil, status.Error(codes.Unknown, fmt.Sprintf("found multiple blog rows with 	authorId='%d'",
+		authorId))
+	}
+	
+
+	return &blogpb.ReadBlogResponse{
+		Blog: dataToBlogPb(data),
+	}, nil
+}
+
 
 
 
