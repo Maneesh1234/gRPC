@@ -143,7 +143,44 @@ func (s *server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequest) (*bl
 	}, nil
 }
 
+func (s *server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) (*blogpb.UpdateBlogResponse, error) {
+	fmt.Println("Update blog request")
+	
+	// get SQL connection from pool
+	c, err := s.connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+	b := req.GetBlog()
+	authorId:=b.GetAuthorId()
+	data := &blogItem{}
+	// update blog
+	res, err := c.ExecContext(ctx, "UPDATE blog SET `content`=?, `title`=? WHERE `author_id`=?",
+		b.GetContent(), b.GetTitle(), authorId)
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to update blog-> "+err.Error())
+	}
 
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected value-> "+err.Error())
+	}
+
+	if rows == 0 {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("blog with authorId='%d' is not found",
+		authorId))
+	}
+	// we update our internal struct
+	data.AuthorID = b.GetAuthorId()
+	data.Content = b.GetContent()
+	data.Title = b.GetTitle()
+	
+	return &blogpb.UpdateBlogResponse{
+		Blog: dataToBlogPb(data),
+	}, nil
+
+}
 
 
 func main() {
