@@ -181,7 +181,36 @@ func (s *server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) 
 	}, nil
 
 }
+func (s *server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*blogpb.DeleteBlogResponse, error) {
+	fmt.Println("Delete blog request")
+	
+	// get SQL connection from pool
+	c, err := s.connect(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+	authorId:=req.GetAuthorId()
+	
+	// delete blog
+	res, err := c.ExecContext(ctx, "DELETE FROM blog WHERE `author_id`=?", authorId)
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to delete blog-> "+err.Error())
+	}
 
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return nil, status.Error(codes.Unknown, "failed to retrieve rows affected value-> "+err.Error())
+	}
+
+	if rows == 0 {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("blog with authorId='%d' is not found",
+		authorId))
+	}
+	
+
+	return &blogpb.DeleteBlogResponse{AuthorId: req.GetAuthorId()}, nil
+}
 
 func main() {
 	// if we crash the go code, we get the file name and line number
