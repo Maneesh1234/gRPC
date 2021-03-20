@@ -32,7 +32,13 @@ message UpdateBlogRequest {
 message UpdateBlogResponse {
     Blog blog = 1;
 }
+message DeleteBlogRequest {
+    int64 author_id = 1;
+}
 
+message DeleteBlogResponse {
+    int64 author_id  = 1;
+}
 
 
 
@@ -40,5 +46,5 @@ service BlogService {
     rpc CreateBlog (CreateBlogRequest) returns (CreateBlogResponse);
      rpc ReadBlog (ReadBlogRequest) returns (ReadBlogResponse); // return NOT_FOUND if not found
      rpc UpdateBlog (UpdateBlogRequest) returns (UpdateBlogResponse);// return NOT_FOUND if not found
-   
+    rpc DeleteBlog (DeleteBlogRequest) returns (DeleteBlogResponse); // return NOT_FOUND if n
 }
