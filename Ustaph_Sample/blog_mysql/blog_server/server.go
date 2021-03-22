@@ -211,7 +211,40 @@ func (s *server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) 
 
 	return &blogpb.DeleteBlogResponse{AuthorId: req.GetAuthorId()}, nil
 }
+func (s *server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
+	fmt.Println("List blog request")
 
+	
+	// get SQL connection from pool
+	c, err := s.connect(context.Background())
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	// get blog list
+	rows, err := c.QueryContext(context.Background(), "SELECT  `author_id`, `content`, `title`  FROM blog")
+	if err != nil {
+		return status.Error(codes.Unknown, "failed to select from blog-> "+err.Error())
+	}
+	defer rows.Close()
+
+	
+	for rows.Next() {
+		data := &blogItem{}
+		if err := rows.Scan(&data.AuthorID, &data.Content, &data.Title); err != nil {
+			return status.Error(codes.Unknown, "failed to retrieve field values from blog row-> "+err.Error())
+		}
+		
+		
+		stream.Send(&blogpb.ListBlogResponse{Blog: dataToBlogPb(data)})
+	}
+	if err := rows.Err(); err != nil {
+		return  status.Error(codes.Unknown, "failed to retrieve data from blog-> "+err.Error())
+	}
+	
+
+	return nil
+}
 func main() {
 	// if we crash the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
